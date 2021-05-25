@@ -1,49 +1,56 @@
-const app = require('express')()
-const path = require('path')
-const shortid = require('shortid')
-const Razorpay = require('razorpay')
-const cors = require('cors')
+const express = require('express');
+const path = require('path');
+const shortid = require('shortid');
+const Razorpay = require('razorpay');
+const cors = require('cors');
+const app = express();
 const bodyParser = require('body-parser')
 
-app.use(cors())
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+
+app.use(cors("http://localhost:3000"));
 
 const razorpay = new Razorpay({
-	key_id: 'rzp_test_uGoq5ABJztRAhk',
-	key_secret: 'FySe2f5fie9hij1a5s6clk9B'
+	key_id: 'rzp_test_TX74ra0jdm8bWW',
+	key_secret: '4bViRmAx5Aq6ndIp1X4yk4io'
 })
 
 app.get('/logo.svg', (req, res) => {
 	res.sendFile(path.join(__dirname, 'logo.svg'))
 })
 
-app.post('/verification', (req, res) => {
-	// do a validation
-	const secret = '12345678'
+// app.post('/verification', (req, res) => {
+// 	// do a validation
+// 	const secret = '12345678'
 
-	console.log(req.body)
+// 	console.log(req.body)
 
-	const crypto = require('crypto')
+// 	const crypto = require('crypto')
 
-	const shasum = crypto.createHmac('sha256', secret)
-	shasum.update(JSON.stringify(req.body))
-	const digest = shasum.digest('hex')
+// 	const shasum = crypto.createHmac('sha256', secret)
+// 	shasum.update(JSON.stringify(req.body))
+// 	const digest = shasum.digest('hex')
 
-	console.log(digest, req.headers['x-razorpay-signature'])
+// 	console.log(digest, req.headers['x-razorpay-signature'])
 
-	if (digest === req.headers['x-razorpay-signature']) {
-		console.log('request is legit')
-		// process it
-		require('fs').writeFileSync('payment1.json', JSON.stringify(req.body, null, 4))
-	} else {
-		// pass it
-	}
-	res.json({ status: 'ok' })
-})
+// 	if (digest === req.headers['x-razorpay-signature']) {
+// 		console.log('request is legit')
+// 		// process it
+// 		require('fs').writeFileSync('payment1.json', JSON.stringify(req.body, null, 4))
+// 	} else {
+// 		// pass it
+// 	}
+// 	res.json({ status: 'ok' })
+// })
 
 app.post('/razorpay', async (req, res) => {
+	// console.log(res,"rrrrrrrrrrrrrrrrrrrrrrrrrrr");
+	console.log(req.body.amount,"rrr");
+	// var amt = req.body.
 	const payment_capture = 1
-	const amount = 499
+	const amount = 11
 	const currency = 'INR'
 
 	const options = {
@@ -55,7 +62,7 @@ app.post('/razorpay', async (req, res) => {
 
 	try {
 		const response = await razorpay.orders.create(options)
-		console.log(response)
+		// console.log(response, 'response111111111111')
 		res.json({
 			id: response.id,
 			currency: response.currency,
@@ -66,6 +73,6 @@ app.post('/razorpay', async (req, res) => {
 	}
 })
 
-app.listen(1337, () => {
-	console.log('Listening on 1337')
+app.listen(4242, () => {
+	console.log('Listening on 4242')
 })
